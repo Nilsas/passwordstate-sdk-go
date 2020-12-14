@@ -1,4 +1,4 @@
-package secret
+package request
 
 import (
 	"bytes"
@@ -32,23 +32,23 @@ func NewClient(apiURL, apiKey string, client *http.Client) *Client {
 	}
 }
 
-func (r *Client) get(ctx context.Context, query string, params url.Values) ([]byte, int, error) {
+func (r *Client) Get(ctx context.Context, query string, params url.Values) ([]byte, int, error) {
 	return r.doRequest(ctx, "GET", query, params, nil)
 }
 
-func (r *Client) patch(ctx context.Context, query string, params url.Values, body []byte) ([]byte, int, error) {
+func (r *Client) Patch(ctx context.Context, query string, params url.Values, body []byte) ([]byte, int, error) {
 	return r.doRequest(ctx, "PATCH", query, params, bytes.NewBuffer(body))
 }
 
-func (r *Client) put(ctx context.Context, query string, params url.Values, body []byte) ([]byte, int, error) {
+func (r *Client) Put(ctx context.Context, query string, params url.Values, body []byte) ([]byte, int, error) {
 	return r.doRequest(ctx, "PUT", query, params, bytes.NewBuffer(body))
 }
 
-func (r *Client) post(ctx context.Context, query string, params url.Values, body []byte) ([]byte, int, error) {
+func (r *Client) Post(ctx context.Context, query string, params url.Values, body []byte) ([]byte, int, error) {
 	return r.doRequest(ctx, "POST", query, params, bytes.NewBuffer(body))
 }
 
-func (r *Client) delete(ctx context.Context, query string) ([]byte, int, error) {
+func (r *Client) Delete(ctx context.Context, query string) ([]byte, int, error) {
 	return r.doRequest(ctx, "DELETE", query, nil, nil)
 }
 
@@ -63,9 +63,7 @@ func (r *Client) doRequest(ctx context.Context, method, query string, params url
 		return nil, 0, err
 	}
 	req = req.WithContext(ctx)
-	if method == "GET" {
-		req.Header.Add("APIKey", r.Key)
-	}
+	req.Header.Add("APIKey", r.Key)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "autograf")
