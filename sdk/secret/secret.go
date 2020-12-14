@@ -41,6 +41,7 @@ type Secret struct {
 	ValidationScriptID          int    `json:"ValidationScriptID,omitempty"`
 	ADDomainNetBIOS             string `json:"ADDomainNetBIOS,omitempty"`
 	ValidatewithPrivAccount     bool   `json:"ValidatewithPrivAccount,omitempty"`
+	MoveToRecycleBin            bool   `json:"MoveToRecycleBin,omitempty"`
 }
 
 type SecretResponse struct {
