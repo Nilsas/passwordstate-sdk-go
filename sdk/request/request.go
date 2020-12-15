@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"path"
 )
 
 // DefaultHTTPClient initialized Passwordstate with appropriate conditions.
@@ -53,12 +52,7 @@ func (r *Client) Delete(ctx context.Context, query string) ([]byte, int, error) 
 }
 
 func (r *Client) doRequest(ctx context.Context, method, query string, params url.Values, buf io.Reader) ([]byte, int, error) {
-	u, _ := url.Parse(r.baseURL)
-	u.Path = path.Join(u.Path, query)
-	if params != nil {
-		u.RawQuery = params.Encode()
-	}
-	req, err := http.NewRequest(method, u.String(), buf)
+	req, err := http.NewRequest(method, r.baseURL+query, buf)
 	if err != nil {
 		return nil, 0, err
 	}
