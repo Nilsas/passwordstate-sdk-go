@@ -12,6 +12,7 @@ type Client interface {
 	AddSecret(ctx context.Context, pass *Secret) (*SecretResponse, error)
 	GetSecret(ctx context.Context, id int) (*[]SecretResponse, error)
 	UpdateSecret(ctx context.Context, pass *Secret) (*[]SecretResponse, error)
+	DeleteSecret(ctx context.Context, data *Secret) error
 }
 
 type secretClient struct {
@@ -79,17 +80,19 @@ func (secret *secretClient) UpdateSecret(ctx context.Context, data *Secret) (*[]
 }
 
 // DeleteSecret Removed the secret from Passwordstate
-func (secret *secretClient) DeleteSecret(ctx context.Context, id int) error {
-	raw, code, err := secret.r.Delete(ctx, fmt.Sprintf("/api/passwords/%d", id))
-	if err != nil {
-		return err
+func (secret *secretClient) DeleteSecret(ctx context.Context, data *Secret) error {
+	var uri string
+	if data.MoveToRecycleBin == true {
+		uri = fmt.Sprintf("/api/passwords/%d?MoveToRecycleBin=True", data.PasswordID)
+	} else {
+		uri = fmt.Sprintf("/api/passwords/%d?MoveToRecycleBin=False", data.PasswordID)
 	}
-	err = json.Unmarshal(raw, err)
+	_, code, err := secret.r.Delete(ctx, uri)
 	if err != nil {
 		return err
 	}
 	if code != 204 {
-		return fmt.Errorf("HTTP error %d: %s", code, err)
+		return fmt.Errorf("HTTP error %d: Expected 204 No response", code)
 	}
 	return nil
 }
